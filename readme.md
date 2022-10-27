@@ -25,4 +25,5 @@ tuples-0.1.2.jar
 ## Running
 I've just been running this in jshell.  From jshell location (Java 9+):  
 `jshell 'towers.java' --class-path 'path_to/tuples-0.1.2.jar'`  
+`new Towers().start()`  
 Probably not a good idea to run the game with more than 8 rings, otherwise it'll take a very long time.

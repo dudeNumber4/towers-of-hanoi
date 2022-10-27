@@ -15,7 +15,7 @@ public class IllegalMove extends Error
     }
 }
 
-public class B
+public class Towers
 {
 
     private int ringCount = 0;
@@ -24,7 +24,7 @@ public class B
     private Stack<Integer> temp;
     private Stack<Integer> target;
 
-    public void b()
+    public void start()
     {
         while (ringCount <= 0)
         {

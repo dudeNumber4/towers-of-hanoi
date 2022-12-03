@@ -4,17 +4,25 @@ public class Canvas
 {
     private int height;
     private int width;
-    private int startTowerPos;
-    private int tempTowerPos;
-    private int targetTowerPos;
+    private int startTowerCenterPos;
+    private int tempTowerCenterPos;
+    private int targetTowerCenterPos;
 
-    public Canvas(int height, int width, int startTowerPos, int tempTowerPos, int targetTowerPos)
+    /**
+     * @param height
+     * @param width
+     * @param startTowerCenterPos
+     * @param tempTowerCenterPos
+     * @param targetTowerCenterPos
+     * @implNote The canvas is just an object that holds positions; it doesn't actually print anything.
+     */
+    public Canvas(int height, int width, int startTowerCenterPos, int tempTowerCenterPos, int targetTowerCenterPos)
     {
         this.height = height;
         this.width = width;
-        this.startTowerPos = startTowerPos;
-        this.tempTowerPos = tempTowerPos;
-        this.targetTowerPos = targetTowerPos;
+        this.startTowerCenterPos = startTowerCenterPos;
+        this.tempTowerCenterPos = tempTowerCenterPos;
+        this.targetTowerCenterPos = targetTowerCenterPos;
     }
 
     public int getHeight()
@@ -25,17 +33,17 @@ public class Canvas
     {
         return width;
     }
-    public int getStartTowerPos()
+    public int getStartTowerCenterPos()
     {
-        return startTowerPos;
+        return startTowerCenterPos;
     }
-    public int getTempTowerPos()
+    public int getTempTowerCenterPos()
     {
-        return tempTowerPos;
+        return tempTowerCenterPos;
     }
-    public int getTargetTowerPos()
+    public int getTargetTowerCenterPos()
     {
-        return targetTowerPos;
+        return targetTowerCenterPos;
     }
     public int ringRowNumFrom(int canvasRowNum)
     {

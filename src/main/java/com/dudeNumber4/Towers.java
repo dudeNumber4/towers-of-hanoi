@@ -8,15 +8,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import wtf.g4s8.tuples.Triplet;
 
-// Unchecked: no recovery
-public class IllegalMove extends Error
-{
-    public IllegalMove(String message) 
-    {
-        super(message);
-    }
-}
-
 public class Towers
 {
 
@@ -28,13 +19,15 @@ public class Towers
 
     public void start()
     {
-        while (ringCount <= 0)
+        while (ringCount < 3 || ringCount > 8)
         {
-            System.out.println("Enter Ring Count of 3 or greater.");
+            System.out.println("Enter Ring Count between 3 and 8.");
             try
             {
-                Scanner sc = new Scanner(System.in);
-                this.ringCount = Integer.parseInt(sc.nextLine());
+                try (Scanner sc = new Scanner(System.in)) 
+                {
+                    this.ringCount = Integer.parseInt(sc.nextLine());
+                }
             } 
             catch (NumberFormatException e)
             {

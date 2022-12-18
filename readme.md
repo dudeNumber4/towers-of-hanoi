@@ -19,7 +19,8 @@ And ends like this:
  Play visually here: https://www.mathsisfun.com/games/towerofhanoi.html
 
 ## Dependencies
-https://mvnrepository.com/artifact/wtf.g4s8/tuples/0.1.2  Crazy strange that a language as old as java doesn't have tuples.  
+* https://mvnrepository.com/artifact/wtf.g4s8/tuples/0.1.2  Crazy strange that a language as old as java doesn't have tuples.
+* Lombok  
 Maven command: `mvn dependency:resolve -U`
 
 ## Running

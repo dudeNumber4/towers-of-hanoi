@@ -1,12 +1,16 @@
 package com.dudeNumber4;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public class Canvas
 {
-    private int height;
-    private int width;
-    private int startTowerCenterPos;
-    private int tempTowerCenterPos;
-    private int targetTowerCenterPos;
+    
+    @Getter @Setter private int height;
+    @Getter @Setter private int width;
+    @Getter @Setter private int startTowerCenterPos;
+    @Getter @Setter private int tempTowerCenterPos;
+    @Getter @Setter private int targetTowerCenterPos;
 
     /**
      * @param height
@@ -25,28 +29,4 @@ public class Canvas
         this.targetTowerCenterPos = targetTowerCenterPos;
     }
 
-    public int getHeight()
-    {
-        return height;
-    }
-    public int getWidth()
-    {
-        return width;
-    }
-    public int getStartTowerCenterPos()
-    {
-        return startTowerCenterPos;
-    }
-    public int getTempTowerCenterPos()
-    {
-        return tempTowerCenterPos;
-    }
-    public int getTargetTowerCenterPos()
-    {
-        return targetTowerCenterPos;
-    }
-    public int ringRowNumFrom(int canvasRowNum)
-    {
-        return height - canvasRowNum;
-    }
 }

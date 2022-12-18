@@ -8,49 +8,81 @@ import java.util.List;
 public class ConsolePrinter 
 {
 
+    private int ringCount;
+    private int centerPosStart;
+    private int centerPosTemp;
+    private int centerPosTarget;
 
-//          |                |          |       height: 8; ring count: 6
+    public ConsolePrinter(int ringCount)
+    {
+        this.ringCount = ringCount;
+    }
+
+//          |                |          |       height: 7; ring count: 6
 //          =                |          |       row: 7
 //         ===               |          |            6
 //       =======             |          |
 //     ===========           |          |
 //   ===============         |          |
-// ===================       |          |
-//        start            temp       target     height: 1
+// ===================       |          |       height: 1
+//        start            temp       target     // this row not actually printed
 
-    // RESUME: Start filling these functions out.
-    // calc canvas width
-    // calc canvas height
-    // calc center position of each tower
-    //      create Canvas
+    // RESUME: Finish filling these functions out (X are finished.)
+    // X calc canvas width
+    // X calc canvas height
+    // X calc center position of each tower
+    //      create CanvasTower
     // for canvas height down to 1
     //   for 1 to canvas width
-    //       if fallsInRingVert
-    //          if fallsInRingHorz print '='
-    //          if fallsInTowerCenter print '|'
-    //          else print space
+    //       X if fallsWithinRing print '='
+    //       if fallsInTowerCenter print '|'
+    //       else print space
     //   print newline
+
+    private void calculateTowerCenterPositions()
+    {
+        int ringWidth = CanvasTower.ringWidth(ringCount);
+        int centerPointForAllRings = (ringWidth + 1) / 2;
+        centerPosStart = centerPointForAllRings;
+        centerPosTemp = ringWidth + 3 + centerPointForAllRings;
+        centerPosTarget = ((ringWidth + 3) * 2) + centerPointForAllRings;
+        
+        //          =
+        //         ===  sum 3, center 2
+        //       =======  sum 7, center 4
+        //     ===========   sum 11, center 6
+        //   ===============  sum 15, center 8
+        // ===================  sum 19, center 10
+    }
+
+    private int canvasHeight()
+    {
+        return ringCount + 1; // Hieight of tower fully loaded plus the center pole of the tower above it
+    }
+
+    private int canvasWidth()
+    {
+        int ringWidth = CanvasTower.ringWidth(ringCount);
+        return (ringWidth * 3) + 6; // 3 rings with 2 gaps of 3 spaces between them.
+    }
 
     /**
      * @param tower
      * @param rowNum
      * @param colNum
      * @param canvas
-     * @return True if we fall anywhere within the printed portion of a tower and it's rings?
+     * @return True if we fall anywhere within the printed portion of a ring on a tower
      */
-    private boolean fallsInRingVert(CanvasTower tower, int rowNum, int colNum, Canvas canvas)
+    private boolean fallsWithinRing(CanvasTower tower, int rowNum, int colNum, Canvas canvas)
     {
         if (rowNum == canvas.getHeight() || rowNum == 1) 
         {
             return false; // top and bottom row form blank border.
         }
-        if (fallsInRingRingRow(tower.getTower(), rowNum - 1)) // convert canvas row num to tower row num
+        if (fallsInRingRow(tower.getTower(), rowNum - 1)) // convert canvas row num to tower row num
         {
-            // we know we're within a tower ROW that needs to print
-            // eval based on these values.
-            int ringWidth = ringWidth(rowNum);
-            int ringRowNum = canvas.ringRowNumFrom(rowNum);
-            int towerPosition = getTowerPosition(tower, canvas);
+            // We know we're within a tower ROW that needs to print.
+            return tower.getTowerWidthAt(rowNum - 1) > 0;
         }
         return false;
     }
@@ -74,30 +106,13 @@ public class ConsolePrinter
     }
 
     /**
-     * @param ringNum
-     * @return Given a ring number (1 smallest ring; 8 largest), return the width in '=' characters that ring should print.
-     */
-    private int ringWidth(int ringNum)
-    {
-        if (ringNum == 1) 
-        {
-            return 1;
-        }
-        if (ringNum == 2) 
-        {
-            return 3;
-        }
-        return (ringNum + 4) + (ringNum - 3) * 3;
-    }
-    
-    /**
      * @param tower
      * @param towerRowNum The tower row number; 1 is bottom row where the bottom-most ring would sit.
      * @return
      * @implNote Given a tower and a current row number, returns true if our current row falls on a ring
      *           that needs to print (without respect to ring width).
      */
-    private boolean fallsInRingRingRow(List<Integer> tower, int towerRowNum)
+    private boolean fallsInRingRow(List<Integer> tower, int towerRowNum)
     {
         return towerRowNum - 1 <= tower.size();
     }

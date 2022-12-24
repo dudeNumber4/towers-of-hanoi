@@ -8,10 +8,17 @@ import java.util.List;
 public class ConsolePrinter 
 {
 
+    /**
+     *
+     */
+    private static final int WIDTH_BETWEEN_TOWERS = 3;
     private int ringCount;
     private int centerPosStart;
     private int centerPosTemp;
     private int centerPosTarget;
+    private CanvasTower start;
+    private CanvasTower temp;
+    private CanvasTower target;
 
     public ConsolePrinter(int ringCount)
     {
@@ -27,33 +34,18 @@ public class ConsolePrinter
 // ===================       |          |       height: 1
 //        start            temp       target     // this row not actually printed
 
-    // RESUME: Finish filling these functions out (X are finished.)
-    // X calc canvas width
-    // X calc canvas height
-    // X calc center position of each tower
-    //      create CanvasTower
+    // RESUME: Calling functions finished; start filling out main func
+    // calc canvas width
+    // calc canvas height
+    // calc center position of each tower
+    //    create CanvasTowers
     // for canvas height down to 1
     //   for 1 to canvas width
-    //       X if fallsWithinRing print '='
-    //       if fallsInTowerCenter print '|'
-    //       else print space
+    //      if fallsWithinTowerArea(column)
+    //      if fallsWithinRing print '='
+    //      if tower.Center print '|'
+    //      else print space
     //   print newline
-
-    private void calculateTowerCenterPositions()
-    {
-        int ringWidth = CanvasTower.ringWidth(ringCount);
-        int centerPointForAllRings = (ringWidth + 1) / 2;
-        centerPosStart = centerPointForAllRings;
-        centerPosTemp = ringWidth + 3 + centerPointForAllRings;
-        centerPosTarget = ((ringWidth + 3) * 2) + centerPointForAllRings;
-        
-        //          =
-        //         ===  sum 3, center 2
-        //       =======  sum 7, center 4
-        //     ===========   sum 11, center 6
-        //   ===============  sum 15, center 8
-        // ===================  sum 19, center 10
-    }
 
     private int canvasHeight()
     {
@@ -81,10 +73,52 @@ public class ConsolePrinter
         }
         if (fallsInRingRow(tower.getTower(), rowNum - 1)) // convert canvas row num to tower row num
         {
-            // We know we're within a tower ROW that needs to print.
-            return tower.getTowerWidthAt(rowNum - 1) > 0;
+            // We know we're within a tower ROW that needs to print, now find whether we're within a tower ring by column
+            return colNum <= tower.getTowerWidthAt(rowNum - 1);
         }
         return false;
+    }
+
+    private CanvasTower fallsWithinTowerArea(int colNum)
+    {
+        // start WIDTH_BETWEEN_TOWERS temp WIDTH_BETWEEN_TOWERS target
+        if (fallsWithinStartTower(colNum))
+        {
+            return start;
+        }
+        if (fallsBetweenStartAndTemp(colNum))
+        {
+            return null;
+        }
+        if (fallsWithinTempTower(colNum))
+        {
+            return temp;
+        }
+        if (fallsBetweenTempAndTarget(colNum))
+        {
+            return null;
+        }
+        return target;
+    }
+
+    private boolean fallsWithinStartTower(int colNum)
+    {
+        return colNum <= temp.maxWidth();
+    }
+
+    private boolean fallsBetweenStartAndTemp(int colNum)
+    {
+        return colNum <= start.maxWidth() + WIDTH_BETWEEN_TOWERS;
+    }
+
+    private boolean fallsWithinTempTower(int colNum)
+    {
+        return colNum <= (start.maxWidth() * 2) + WIDTH_BETWEEN_TOWERS;
+    }
+
+    private boolean fallsBetweenTempAndTarget(int colNum)
+    {
+        return colNum <= (start.maxWidth() * 2) + (WIDTH_BETWEEN_TOWERS * 2);
     }
 
     /**

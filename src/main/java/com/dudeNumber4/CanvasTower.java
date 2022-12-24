@@ -12,11 +12,27 @@ public class CanvasTower
     @Getter @Setter private List<Integer> tower;
     @Getter @Setter private TowerType towerType;
 
-    ArrayList<Integer> ringWidths;
+    private ArrayList<Integer> ringWidths;
+
+    public int maxWidth()
+    {
+        return ringWidths.stream().max(Integer::max).orElse(0);
+    }
+
+    public int center()
+    {
+        //          =
+        //         ===  sum 3, center 2
+        //       =======  sum 7, center 4
+        //     ===========   sum 11, center 6
+        //   ===============  sum 15, center 8
+        // ===================  sum 19, center 10
+        return (maxWidth() / 2) + 1;
+    }
 
     /**
      * @param tower
-     * @param towerType
+     * @param towerType start, temp, target
      * @implNote Represents a single "tower."  Three towers (from Towers class) show during every move: src, temp, target
      *           A tower is just a list of int, each int representing the number that represents how large that ring is.
      *           1 = smallest ring; 8 = largest ring

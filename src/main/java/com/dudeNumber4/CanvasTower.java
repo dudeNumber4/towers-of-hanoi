@@ -8,27 +8,40 @@ import lombok.Setter;
 
 public class CanvasTower
 {
-    
+
+    //          |                           |                  |       height: 7; ring count: 6, row: 1
+    //          =                           |                  |
+    //         ===                          |                  |
+    //       =======                        |                  |
+    //     ===========                      |                  |
+    //   ===============                    |                  |
+    // ===================                  |                  |       row: 7, first int in our tower list
+    //        start                       temp               target     // this row not actually printed
+
+    // The center of each tower is similar to above; only need be calculated once, it remains the same
+    // throughout the drawing period.
+    //          height is 7
+    //          =
+    //         ===  sum 3, center 2
+    //       =======  sum 7, center 4
+    //     ===========   sum 11, center 6
+    //   ===============  sum 15, center 8
+    // ===================  sum 19, center 10
+    @Getter @Setter private int towerCenter;
+
+    // List of ints representing the ring number at that position in the tower.
+    // If there is no ring at that position the value is 0; else it's the number represented by the ring:
+    // If tower consists of 3 rings, the rings will be 1,2,3
     @Getter @Setter private List<Integer> tower;
     @Getter @Setter private TowerType towerType;
 
-    private ArrayList<Integer> ringWidths;
+    // Item 0 reflects width for ring at row height: height: 7; ring count 6
+    // Item 5 reflects width for ring at row 1: height: 7; ring count 6
+    private final ArrayList<Integer> ringWidths;
 
-    public int maxWidth()
-    {
-        return ringWidths.stream().max(Integer::max).orElse(0);
-    }
-
-    public int center()
-    {
-        //          =
-        //         ===  sum 3, center 2
-        //       =======  sum 7, center 4
-        //     ===========   sum 11, center 6
-        //   ===============  sum 15, center 8
-        // ===================  sum 19, center 10
-        return (maxWidth() / 2) + 1;
-    }
+    // The positions of this tower at it's left and right column within the canvas, set by the owner
+    @Getter @Setter private int leftPos;
+    @Getter @Setter private int rightPos;
 
     /**
      * @param tower
@@ -42,34 +55,44 @@ public class CanvasTower
     {
         this.tower = tower;
         this.towerType = towerType;
-        ringWidths = new ArrayList<Integer>(tower.stream().map((i) -> ringWidth(i)).toList());
+        ringWidths = new ArrayList<>(tower.stream().map((i) -> ringWidth(i)).toList());
     }
 
-    /**
-     * @param row Row number of that tower assuming complete (1 is top; 8 is largest bottom).
-     * @return The current width of that row within the tower taking into account it's current state.
-     */
-    public int getTowerWidthAt(int row)
+    public int maxWidth()
     {
-        // rows are 1 based
-        return row <= tower.size() ? ringWidths.indexOf(ringWidth(row)) : 0;
+        return ringWidths.stream().max(Integer::max).orElse(0);
     }
 
     /**
-     * @param ringNum
-     * @return Given a ring number (1 smallest ring; 8 largest), return the width in '=' characters that ring should print.
+     * @param row See diagram above.
+     * @return Width of the edge that shows on either side of the ring (0 for largest ring)
+     */
+    public int getRingWidth(int row)
+    {
+        if (row == 1)
+            return 0; // Row 1 never has a ring in it.
+        return ringWidths.get((tower.size() - 1) - (row - 2));
+    }
+
+    /**
+     * @param ringNum 1 smallest ring; 8 largest
+     * @return Given a ring number, return the width in '=' characters that ring should print.
      */
     public static int ringWidth(int ringNum)
     {
-        if (ringNum == 1) 
+        if (ringNum == 10)
         {
-            return 1;
+            return 0;
         }
-        if (ringNum == 2) 
+        if (ringNum == 1)
         {
             return 3;
         }
+        if (ringNum == 2)
+        {
+            return 5;
+        }
         return (ringNum + 4) + (ringNum - 3) * 3;
     }
-    
+
 }

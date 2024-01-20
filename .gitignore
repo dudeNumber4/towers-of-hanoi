@@ -4,5 +4,6 @@
 .project
 .settings/
 .vs/
+.idea/
 
 target/

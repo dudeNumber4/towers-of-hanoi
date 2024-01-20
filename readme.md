@@ -27,4 +27,4 @@ Maven command: `mvn dependency:resolve -U`
 I've just been running this in jshell.  From jshell location (Java 9+):  
 `jshell 'towers.java' --class-path 'path_to/tuples-0.1.2.jar'`  
 `new Towers().start()`  
-Game currently limited to 8 rings, otherwise it'll take a very long time and spew too much output.
+Game essentially limited to 8 rings, otherwise it'll take a very long time and spew too much output.

@@ -3,20 +3,26 @@ package com.dudeNumber4;
 import lombok.Getter;
 import lombok.Setter;
 
-// Owns the towers and does calculations to enable canvas printer
+// Owns the towers and does calculations to enable console printer
 public class Canvas
 {
     
-//          |                |          |       height: 7; ring count: 6
-//          =                |          |       row: 7
-//         ===               |          |            6
-//       =======             |          |
-//     ===========           |          |
-//   ===============         |          |
-// ===================       |          |       height: 1
-//        start            temp       target     // this row not actually printed
-
     private static final int WIDTH_BETWEEN_TOWERS = 3;
+
+    // width at widest point for all towers, whether they have any rings at the time or not.
+    // In ascii art below, width would be 19
+    private int maxTowerWidth;
+
+    // The center of each tower is similar to above; only need be calculated once, it remains the same
+    // throughout the drawing period.
+    //          height is 7
+    //          =
+    //         ===  sum 3, center 2
+    //       =======  sum 7, center 4
+    //     ===========   sum 11, center 6
+    //   ===============  sum 15, center 8
+    // ===================  sum 19, center 10
+    private int towerCenter;
 
     private int ringCount;  // number of rings per tower
 
@@ -27,18 +33,23 @@ public class Canvas
     /*@Getter @Setter*/ private CanvasTower target;
 
     /**
-     * @param height
-     * @param width
      * @implNote The canvas is just an object that holds positions; it doesn't actually print anything.
      */
     public Canvas(CanvasTower start, CanvasTower temp, CanvasTower target)
     {
-        this.ringCount = start.getTower().size() + temp.getTower().size() + target.getTower().size();
-        this.start = start;
-        this.temp = temp;
-        this.target = target;
-        this.height = canvasHeight();
-        this.width = canvasWidth();
+        if (start.getTower().size() == temp.getTower().size() && temp.getTower().size() == target.getTower().size())
+        {
+            this.ringCount = start.getTower().size();
+            this.height = canvasHeight();
+            this.width = canvasWidth();
+            this.maxTowerWidth = Math.max(Math.max(start.maxWidth(), temp.maxWidth()), target.maxWidth());
+            congfigureTowers(start, temp, target);
+            this.towerCenter = (this.maxTowerWidth / 2) + 1;
+        }
+        else
+        {
+            throw new IllegalCanvas("Towers must be of equal height");
+        }
     }
 
     public CanvasTower fallsOnRowWithinTower(int colNum)
@@ -70,72 +81,79 @@ public class Canvas
 
     /**
      * @param tower
-     * @param rowNum
+     * @param rowNum: 1 is top of tower above the top ring (but the tower center still prints here).  See diagram in CanvasTawer.
      * @param colNum
-     * @param canvas
      * @return True if we fall anywhere within the printed portion of a ring on a tower
-     * @implNote Pre: we know we fall somewhere within a tower's area, now determine whether we are in a ring on that tower's area.
+     * @implNote Pre: we know we fall somewhere within a tower's area, now determine whether we are in a ring on that tower's area or in the edge/empty space.
      */
     public boolean fallsWithinRing(CanvasTower tower, int rowNum, int colNum)
     {
-        if (fallsInRingRow(tower, rowNum - 1)) // convert canvas row num to tower row num
-        {
-            // We know we're within a tower ROW that needs to print, now find whether we're within a tower ring by column
-            return colNum <= tower.getTowerWidthAt(rowNum - 1);
-        }
-        return false;
+        var ringWidth = tower.getRingWidth(rowNum);
+
+        if (ringWidth == 0) // no ring for this tower for this row
+            return false;
+
+        // expected to be called left to right
+        if (maxTowerWidth == ringWidth)
+            return true;  // ring occupies full width
+
+        return colNum > ((maxTowerWidth - ringWidth) / 2);
     }
 
+    /*
+    All these "fallsOnRow" functions are currently designed to be called in order to arrive at the correct position.
+     */
     private boolean fallsOnRowWithinStartTower(int colNum)
     {
-        return colNum <= temp.maxWidth();
+        return colNum <= maxTowerWidth;
     }
 
     private boolean fallsOnRowBetweenStartAndTemp(int colNum)
     {
-        return colNum <= start.maxWidth() + WIDTH_BETWEEN_TOWERS;
+        return colNum <= maxTowerWidth + WIDTH_BETWEEN_TOWERS;
     }
 
     private boolean fallsOnRowWithinTempTower(int colNum)
     {
-        return colNum <= (start.maxWidth() * 2) + WIDTH_BETWEEN_TOWERS;
+        return colNum <= temp.getRightPos();
     }
 
     private boolean fallsOnRowBetweenTempAndTarget(int colNum)
     {
-        return colNum <= (start.maxWidth() * 2) + (WIDTH_BETWEEN_TOWERS * 2);
+        return colNum <= target.getLeftPos();
     }
 
     private boolean fallsOnCenterOfStart(int colNum)
     {
-        return colNum == start.center();
+        return colNum == towerCenter;
     }
 
     private boolean fallsOnCenterOfTemp(int colNum)
     {
-        return colNum == (start.center() * 2) + WIDTH_BETWEEN_TOWERS;
+        return colNum == temp.getLeftPos() + towerCenter - 1;
     }
 
     private boolean fallsOnCenterOfTarget(int colNum)
     {
-        return colNum == (start.center() * 3) + (WIDTH_BETWEEN_TOWERS * 2);
+        return colNum == target.getLeftPos() + towerCenter - 1;
     }
 
-    /**
-     * @param tower
-     * @param towerRowNum The tower row number; 1 is bottom row where the bottom-most ring would sit.
-     * @return
-     * @implNote Given a tower and a current row number, returns true if our current row falls on a ring
-     *           that needs to print (without respect to ring width).
-     */
-    private boolean fallsInRingRow(CanvasTower tower, int towerRowNum)
+    private void congfigureTowers(CanvasTower start, CanvasTower temp, CanvasTower target)
     {
-        return towerRowNum - 1 <= tower.maxWidth();
+        this.start = start;
+        this.temp = temp;
+        this.target = target;
+        this.start.setLeftPos(1);
+        this.temp.setLeftPos(1 + maxTowerWidth + WIDTH_BETWEEN_TOWERS);
+        this.target.setLeftPos(1 + (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2));
+        this.start.setRightPos(this.start.getLeftPos() + maxTowerWidth);
+        this.temp.setRightPos(this.temp.getLeftPos() + maxTowerWidth);
+        this.target.setRightPos(this.target.getLeftPos() + maxTowerWidth);
     }
 
     private int canvasHeight()
     {
-        return ringCount + 1; // Hieight of tower fully loaded plus the center pole of the tower above it
+        return ringCount + 1; // Height of tower fully loaded plus the center pole of the tower above it
     }
 
     private int canvasWidth()

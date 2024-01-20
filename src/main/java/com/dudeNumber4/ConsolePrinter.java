@@ -16,7 +16,7 @@ public class ConsolePrinter
 
     public void Print()
     {
-        for (int rowNum = canvas.getHeight(); rowNum >= 1; rowNum--)
+        for (int rowNum = 1; rowNum <= canvas.getHeight(); rowNum++)
         {
             for (int colNum = 1; colNum < canvas.getWidth(); colNum++) 
             {
@@ -27,15 +27,18 @@ public class ConsolePrinter
                 }
                 else
                 {
-                    if (canvas.fallsOnRowInTowerCenter(colNum)) 
-                    {
-                        System.out.print("|");
-                    }
-                    if (canvas.fallsWithinRing(towerForRow, rowNum, colNum)) 
+                    if (canvas.fallsWithinRing(towerForRow, rowNum, colNum))
                     {
                         System.out.print("=");
                     }
-                    System.out.print(" ");
+                    else if (canvas.fallsOnRowInTowerCenter(colNum))
+                    {
+                        System.out.print("|");
+                    }
+                    else
+                    {
+                        System.out.print(" ");
+                    }
                 }
             }
             System.out.println();

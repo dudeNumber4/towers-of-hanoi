@@ -80,7 +80,7 @@ public class CanvasTower
      */
     public static int ringWidth(int ringNum)
     {
-        if (ringNum == 10)
+        if (ringNum == 0 || ringNum > 8)
         {
             return 0;
         }

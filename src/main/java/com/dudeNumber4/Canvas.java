@@ -7,7 +7,7 @@ import lombok.Setter;
 public class Canvas
 {
     
-    private static final int WIDTH_BETWEEN_TOWERS = 3;
+    private static final int WIDTH_BETWEEN_TOWERS = 2;
 
     // width at widest point for all towers, whether they have any rings at the time or not.
     // In ascii art below, width would be 19
@@ -106,13 +106,21 @@ public class Canvas
 
     private boolean fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
     {
-        var edgeWidth = (maxTowerWidth - ringWidth) / 2;
+        var baseEdge = (maxTowerWidth - ringWidth) / 2;
+        var leftEdge = baseEdge;
+        var rightEdge = maxTowerWidth - baseEdge + 1;
         if (tower.getTowerType() == TowerType.temp)
-            edgeWidth += maxTowerWidth + WIDTH_BETWEEN_TOWERS;
+        {
+            leftEdge = maxTowerWidth + WIDTH_BETWEEN_TOWERS + baseEdge;
+            rightEdge = (maxTowerWidth * 2) + WIDTH_BETWEEN_TOWERS + maxTowerWidth - baseEdge;
+        }
         if (tower.getTowerType() == TowerType.target)
-            edgeWidth += (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2);
+        {
+            leftEdge = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + baseEdge;
+            rightEdge = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdge + 1;
+        }
 
-        return (colNum > edgeWidth) && (colNum <= (maxTowerWidth - edgeWidth));
+        return (colNum > leftEdge) && (colNum < rightEdge);
     }
 
     private boolean fallsOnRowWithinStartTower(int colNum)

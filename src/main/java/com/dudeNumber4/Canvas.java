@@ -97,12 +97,24 @@ public class Canvas
         if (maxTowerWidth == ringWidth)
             return true;  // ring occupies full width
 
-        return colNum > ((maxTowerWidth - ringWidth) / 2);
+        return fallsWithinRingOnCol(tower, ringWidth, colNum);
     }
 
     /*
-    All these "fallsOnRow" functions are currently designed to be called in order to arrive at the correct position.
+    All these "fallsOnRow" and "fallsWithinRingOnCol" functions are currently designed to be called in order to arrive at the correct position.
      */
+
+    private boolean fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
+    {
+        var edgeWidth = (maxTowerWidth - ringWidth) / 2;
+        if (tower.getTowerType() == TowerType.temp)
+            edgeWidth += maxTowerWidth + WIDTH_BETWEEN_TOWERS;
+        if (tower.getTowerType() == TowerType.target)
+            edgeWidth += (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2);
+
+        return (colNum > edgeWidth) && (colNum <= (maxTowerWidth - edgeWidth));
+    }
+
     private boolean fallsOnRowWithinStartTower(int colNum)
     {
         return colNum <= maxTowerWidth;

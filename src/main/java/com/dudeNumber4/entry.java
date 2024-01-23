@@ -11,12 +11,9 @@ public class entry
         // from the towers class and provide a new canvas.
         //new Towers().start();
 
-        // first index is bottom ring
-        // corrected code for start ring in order to make 3/2/1,0,0 work.  Prior to that 3,1,2 (on bottom rung of each tower) worked correctly
-        // just corrected for 0,1,3/2
-        CanvasTower start = new CanvasTower(List.of(3,0,0), TowerType.start);
-        CanvasTower temp = new CanvasTower(List.of(1,0,0), TowerType.temp);
-        CanvasTower target = new CanvasTower(List.of(2,0,0), TowerType.target);
+        CanvasTower start = new CanvasTower(List.of(0,0,0,0), TowerType.start);
+        CanvasTower temp = new CanvasTower(List.of(4,0,0,0), TowerType.temp);
+        CanvasTower target = new CanvasTower(List.of(3,2,1,0), TowerType.target);
         ConsolePrinter printer = new ConsolePrinter(start, temp, target);
         printer.Print();
     }

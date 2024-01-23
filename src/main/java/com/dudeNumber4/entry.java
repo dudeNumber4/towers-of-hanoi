@@ -11,9 +11,9 @@ public class entry
         // from the towers class and provide a new canvas.
         //new Towers().start();
 
-        CanvasTower start = new CanvasTower(List.of(0,0,0,0), TowerType.start);
-        CanvasTower temp = new CanvasTower(List.of(4,0,0,0), TowerType.temp);
-        CanvasTower target = new CanvasTower(List.of(3,2,1,0), TowerType.target);
+        CanvasTower start = new CanvasTower(List.of(6,5,4,0,0,0), TowerType.start);
+        CanvasTower temp = new CanvasTower(List.of(3,1,0,0,0,0), TowerType.temp);
+        CanvasTower target = new CanvasTower(List.of(2,0,0,0,0,0), TowerType.target);
         ConsolePrinter printer = new ConsolePrinter(start, temp, target);
         printer.Print();
     }

@@ -18,7 +18,7 @@ public class ConsolePrinter
     {
         for (int rowNum = 1; rowNum <= canvas.getHeight(); rowNum++)
         {
-            for (int colNum = 1; colNum < canvas.getWidth(); colNum++) 
+            for (int colNum = 1; colNum <= canvas.getWidth(); colNum++)
             {
                 CanvasTower towerForRow = canvas.fallsOnRowWithinTower(colNum);
                 if (towerForRow == null)

@@ -43,7 +43,7 @@ public class Canvas
             this.height = canvasHeight();
             this.width = canvasWidth();
             this.maxTowerWidth = Math.max(Math.max(start.maxWidth(), temp.maxWidth()), target.maxWidth());
-            congfigureTowers(start, temp, target);
+            configureTowers(start, temp, target);
             this.towerCenter = (this.maxTowerWidth / 2) + 1;
         }
         else
@@ -117,7 +117,7 @@ public class Canvas
         if (tower.getTowerType() == TowerType.target)
         {
             leftEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + baseEdgeForCurrentRingWidth + 1;
-            rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdgeForCurrentRingWidth + 1;
+            rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdgeForCurrentRingWidth ;
         }
 
         return (colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth);
@@ -140,7 +140,7 @@ public class Canvas
 
     private boolean fallsOnRowBetweenTempAndTarget(int colNum)
     {
-        return colNum <= target.getLeftPos();
+        return colNum < target.getLeftPos();
     }
 
     private boolean fallsOnCenterOfStart(int colNum)
@@ -158,7 +158,7 @@ public class Canvas
         return colNum == target.getLeftPos() + towerCenter - 1;
     }
 
-    private void congfigureTowers(CanvasTower start, CanvasTower temp, CanvasTower target)
+    private void configureTowers(CanvasTower start, CanvasTower temp, CanvasTower target)
     {
         this.start = start;
         this.temp = temp;

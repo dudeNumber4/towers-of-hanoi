@@ -12,7 +12,8 @@ public class entry
         //new Towers().start();
 
         // first index is bottom ring
-        CanvasTower start = new CanvasTower(List.of(3, 0, 0), TowerType.start);
+        // corrected code for start ring in order to make 3,2,1 work.  Prior to that 3,1,2 (on bottom rung of each tower) worked correctly
+        CanvasTower start = new CanvasTower(List.of(3,0,0), TowerType.start);
         CanvasTower temp = new CanvasTower(List.of(1,0,0), TowerType.temp);
         CanvasTower target = new CanvasTower(List.of(2,0,0), TowerType.target);
         ConsolePrinter printer = new ConsolePrinter(start, temp, target);

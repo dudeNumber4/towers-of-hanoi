@@ -107,8 +107,8 @@ public class Canvas
     private boolean fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
     {
         var baseEdgeForCurrentRingWidth = (maxTowerWidth - ringWidth) / 2;
-        var leftEdgeForCurrentRingWidth = baseEdgeForCurrentRingWidth;
-        var rightEdgeForCurrentRingWidth = maxTowerWidth - baseEdgeForCurrentRingWidth + 1;
+        var leftEdgeForCurrentRingWidth = baseEdgeForCurrentRingWidth + 1;
+        var rightEdgeForCurrentRingWidth = maxTowerWidth - baseEdgeForCurrentRingWidth;
         if (tower.getTowerType() == TowerType.temp)
         {
             leftEdgeForCurrentRingWidth = maxTowerWidth + WIDTH_BETWEEN_TOWERS + baseEdgeForCurrentRingWidth + 1;

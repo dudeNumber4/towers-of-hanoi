@@ -106,21 +106,21 @@ public class Canvas
 
     private boolean fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
     {
-        var baseEdge = (maxTowerWidth - ringWidth) / 2;
-        var leftEdge = baseEdge;
-        var rightEdge = maxTowerWidth - baseEdge + 1;
+        var baseEdgeForCurrentRingWidth = (maxTowerWidth - ringWidth) / 2;
+        var leftEdgeForCurrentRingWidth = baseEdgeForCurrentRingWidth;
+        var rightEdgeForCurrentRingWidth = maxTowerWidth - baseEdgeForCurrentRingWidth + 1;
         if (tower.getTowerType() == TowerType.temp)
         {
-            leftEdge = maxTowerWidth + WIDTH_BETWEEN_TOWERS + baseEdge;
-            rightEdge = (maxTowerWidth * 2) + WIDTH_BETWEEN_TOWERS + maxTowerWidth - baseEdge;
+            leftEdgeForCurrentRingWidth = maxTowerWidth + WIDTH_BETWEEN_TOWERS + baseEdgeForCurrentRingWidth + 1;
+            rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + WIDTH_BETWEEN_TOWERS - baseEdgeForCurrentRingWidth;
         }
         if (tower.getTowerType() == TowerType.target)
         {
-            leftEdge = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + baseEdge;
-            rightEdge = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdge + 1;
+            leftEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + baseEdgeForCurrentRingWidth + 1;
+            rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdgeForCurrentRingWidth + 1;
         }
 
-        return (colNum > leftEdge) && (colNum < rightEdge);
+        return (colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth);
     }
 
     private boolean fallsOnRowWithinStartTower(int colNum)

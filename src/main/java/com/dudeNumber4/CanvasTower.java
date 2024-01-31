@@ -46,10 +46,10 @@ public class CanvasTower
     /**
      * @param tower
      * @param towerType start, temp, target
-     * @implNote Represents a single "tower."  Three towers (from Towers class) show during every move: src, temp, target
+     * @implNote Represents a single "tower."  Three towers (from Towers class) show during every printTower: src, temp, target
      *           A tower is just a list of int, each int representing the number that represents how large that ring is.
      *           1 = smallest ring; 8 = largest ring
-     *           The three towers are recreated for each "move"
+     *           The three towers are recreated for each "printTower"
      */
     public CanvasTower(List<Integer> tower, TowerType towerType)
     {

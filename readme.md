@@ -1,6 +1,6 @@
 # Towers of Hanoi
 Just a fun project to help learn java better.
-Towers of Hanoi is the famous game where you move rings on "towers" from a start tower to a target tower by also using a temporary tower.  The game starts like this:
+Towers of Hanoi is the famous game where you move rings on "towers" from a start tower to a target tower by also using a temporary tower with the main rule that all rings must move onto either an empty tower or one with a larger ring than the one you're moving on it.  The game starts like this:
 ```
    |          |          |
    =          |          |
@@ -26,14 +26,10 @@ And ends like this:
   * Even rings: next move is always to the immediate right.
 * One more rule: when deciding which piece to move next, scan the tops of each pile and move the largest ring which can legally move following the above rule.
 
-
 ## Dependencies
 * https://mvnrepository.com/artifact/wtf.g4s8/tuples/0.1.2  Crazy strange that a language as old as java doesn't have tuples.
 * Lombok  
-Maven command: `mvn dependency:resolve -U`
+Maven command: `mvn clean compile assembly:single`
 
 ## Running
-I've just been running this in jshell.  From jshell location (Java 9+):  
-`jshell 'towers.java' --class-path 'path_to/tuples-0.1.2.jar'`  
-`new Towers().start()`  
 Game essentially limited to 8 rings, otherwise it'll take a very long time and spew too much output.

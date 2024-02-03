@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.IntStream;
 
+/*
+Started with just Towers class.  Added ConsolePrinter (and supporting).  This forwarded or mediated between towers and the printer.
+ */
 public class PrintMediator
 {
 

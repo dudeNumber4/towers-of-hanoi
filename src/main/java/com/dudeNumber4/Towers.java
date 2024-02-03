@@ -10,7 +10,7 @@ public class Towers
 
     private int ringCount = 0;
     private boolean ringCountEven;
-    private Stack<Integer> src;
+    private Stack<Integer> start;
     private Stack<Integer> temp;
     private Stack<Integer> target;
     private final PrintMediator mediator = new PrintMediator();
@@ -53,7 +53,7 @@ public class Towers
 
     private void executeMove() throws IllegalMove
     {
-        Triplet<Boolean, Stack<Integer>, Stack<Integer>> srcMove = planMove(src);
+        Triplet<Boolean, Stack<Integer>, Stack<Integer>> srcMove = planMove(start);
         Triplet<Boolean, Stack<Integer>, Stack<Integer>> tempMove = planMove(temp);
         Triplet<Boolean, Stack<Integer>, Stack<Integer>> targetMove = planMove(target);
 
@@ -94,7 +94,7 @@ public class Towers
             return null;
         }
         boolean shouldMoveLeft = shouldMoveLeft(tower);
-        Stack<Integer> immediateAdjacent = getTowerToMoveTo(tower == src, tower == temp, tower == target, shouldMoveLeft);
+        Stack<Integer> immediateAdjacent = getTowerToMoveTo(tower == start, tower == temp, tower == target, shouldMoveLeft);
         boolean mayMoveToAdjacent = mayLegallyMove(tower, immediateAdjacent);
         if (mayMoveToAdjacent) 
         {
@@ -135,9 +135,9 @@ public class Towers
         }
         if (towerIsTemp)
         {
-            return left ? src : target;
+            return left ? start : target;
         }
-        return left ? temp : src;
+        return left ? temp : start;
     }
 
     private void move(Stack<Integer> from, Stack<Integer> to) throws IllegalMove
@@ -163,7 +163,7 @@ public class Towers
     private void printMove(Stack<Integer> from, Stack<Integer> to, Integer fromValue)
     {
         System.out.println(String.format("Move ring %1$d from %2$s to %3$s:", fromValue, getTowerName(from), getTowerName(to)));
-        mediator.printTower(src, temp, target, ringCount);
+        mediator.printTower(start, temp, target, ringCount);
         System.out.print("Enter q to quit or any key to continue: ");
         // Here I discovered that you can't create/close a new Scanner 2 different times in the same (process?).  I had to re-use an existing one.
         // If you try, it'll never halt awaiting next line.
@@ -172,9 +172,9 @@ public class Towers
 
     private String getTowerName(Stack<Integer> tower)
     {
-        if (tower == src) 
+        if (tower == start)
         {
-            return "Source";     
+            return "Start";
         }
         if (tower == temp) 
         {
@@ -185,19 +185,19 @@ public class Towers
     
     private void prepareGame(int ringCount)
     {
-        src = new Stack<>();
+        start = new Stack<>();
         temp = new Stack<>();
         target = new Stack<>();
 
         for (int i = ringCount; i > 0; i--) 
         {
-            src.push(i);
+            start.push(i);
         }
 
         ringCountEven = ringCount % 2 == 0;
 
         System.out.println(String.format("%1$sStart game.  Smallest ring is ring 1; largest ring is ring %2$d.%1$s", System.lineSeparator(), ringCount));
-        mediator.printTower(src, temp, target, ringCount);
+        mediator.printTower(start, temp, target, ringCount);
     }
 
     private boolean gameIsComplete()

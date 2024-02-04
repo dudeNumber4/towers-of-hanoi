@@ -11,7 +11,7 @@ public class Canvas
 
     // width at widest point for all towers, whether they have any rings at the time or not.
     // In ascii art below, width would be 19
-    private int maxTowerWidth;
+    private final int maxTowerWidth;
 
     // The center of each tower is similar to above; only need be calculated once, it remains the same
     // throughout the drawing period.
@@ -22,9 +22,9 @@ public class Canvas
     //     ===========   sum 11, center 6
     //   ===============  sum 15, center 8
     // ===================  sum 19, center 10
-    private int towerCenter;
+    private final int towerCenter;
 
-    private int ringCount;  // number of rings per tower
+    private final int ringCount;  // number of rings per tower
 
     @Getter @Setter private int height;
     @Getter @Setter private int width;
@@ -55,6 +55,7 @@ public class Canvas
     public CanvasTower fallsOnRowWithinTower(int colNum)
     {
         // start WIDTH_BETWEEN_TOWERS temp WIDTH_BETWEEN_TOWERS target
+        // It sure seems like some sort of pattern matching would be nice here, but it doesn't fit any java 21 form.
         if (fallsOnRowWithinStartTower(colNum))
         {
             return start;

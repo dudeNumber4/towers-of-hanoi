@@ -26,7 +26,7 @@ public class Towers
             {
                 this.ringCount = Integer.parseInt(consoleScanner.nextLine());
             }
-            catch (NumberFormatException e)
+            catch (NumberFormatException ignored)
             {
             }
         }

@@ -7,7 +7,7 @@ package com.dudeNumber4;
 public class ConsolePrinter 
 {
 
-    private Canvas canvas;
+    private final Canvas canvas;
 
     public ConsolePrinter(CanvasTower start, CanvasTower temp, CanvasTower target)
     {

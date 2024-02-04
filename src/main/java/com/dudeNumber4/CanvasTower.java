@@ -1,6 +1,7 @@
 package com.dudeNumber4;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.Getter;
@@ -55,12 +56,12 @@ public class CanvasTower
     {
         this.tower = tower;
         this.towerType = towerType;
-        ringWidths = new ArrayList<>(tower.stream().map((i) -> ringWidth(i)).toList());
+        ringWidths = new ArrayList<>(tower.stream().map(CanvasTower::ringWidth).toList());
     }
 
     public int maxWidth()
     {
-        return ringWidths.stream().max(Integer::max).orElse(0);
+        return ringWidths.stream().max(Comparator.naturalOrder()).orElse(0);
     }
 
     /**

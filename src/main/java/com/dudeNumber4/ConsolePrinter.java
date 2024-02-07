@@ -1,5 +1,7 @@
 package com.dudeNumber4;
 
+import java.util.List;
+
 // Creates the canvas and uses it's calculations to print the towers.
 // 2 assumptions:
 // * Console is configured to use fixed width font, or it won't look quite right.
@@ -9,7 +11,7 @@ public class ConsolePrinter
 
     private final Canvas canvas;
 
-    public ConsolePrinter(CanvasTower start, CanvasTower temp, CanvasTower target)
+    public ConsolePrinter(List<Integer> start, List<Integer> temp, List<Integer> target)
     {
         canvas = new Canvas(start, temp, target);
     }

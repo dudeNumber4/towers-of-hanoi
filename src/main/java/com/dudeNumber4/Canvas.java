@@ -3,6 +3,8 @@ package com.dudeNumber4;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 // Owns the towers and does calculations to enable console printer
 public class Canvas
 {
@@ -25,25 +27,30 @@ public class Canvas
     private final int towerCenter;
 
     private final int ringCount;  // number of rings per tower
+    private final CanvasTower start;
+    private final CanvasTower temp;
+    private final CanvasTower target;
 
-    @Getter @Setter private int height;
-    @Getter @Setter private int width;
-    /*@Getter @Setter*/ private CanvasTower start;
-    /*@Getter @Setter*/ private CanvasTower temp;
-    /*@Getter @Setter*/ private CanvasTower target;
+    @Getter private final int height;
+    @Getter private final int width;
 
     /**
      * @implNote The canvas is just an object that holds positions; it doesn't actually print anything.
      */
-    public Canvas(CanvasTower start, CanvasTower temp, CanvasTower target)
+    public Canvas(List<Integer> start, List<Integer> temp, List<Integer> target)
     {
-        if (start.getTower().size() == temp.getTower().size() && temp.getTower().size() == target.getTower().size())
+        // I want to extract this into a method named "InitializeTowers," but java is not smart enough for that.
+        this.start = new CanvasTower(start, TowerType.start);
+        this.temp = new CanvasTower(temp, TowerType.temp);
+        this.target = new CanvasTower(target, TowerType.target);
+
+        if (this.start.getTower().size() == this.temp.getTower().size() && this.temp.getTower().size() == this.target.getTower().size())
         {
-            this.ringCount = start.getTower().size();
+            this.ringCount = this.start.getTower().size();
             this.height = canvasHeight();
             this.width = canvasWidth();
-            this.maxTowerWidth = Math.max(Math.max(start.maxWidth(), temp.maxWidth()), target.maxWidth());
-            configureTowers(start, temp, target);
+            this.maxTowerWidth = Math.max(Math.max(this.start.maxWidth(), this.temp.maxWidth()), this.target.maxWidth());
+            configureTowers();
             this.towerCenter = (this.maxTowerWidth / 2) + 1;
         }
         else
@@ -159,11 +166,8 @@ public class Canvas
         return colNum == target.getLeftPos() + towerCenter - 1;
     }
 
-    private void configureTowers(CanvasTower start, CanvasTower temp, CanvasTower target)
+    private void configureTowers()
     {
-        this.start = start;
-        this.temp = temp;
-        this.target = target;
         this.start.setLeftPos(1);
         this.temp.setLeftPos(1 + maxTowerWidth + WIDTH_BETWEEN_TOWERS);
         this.target.setLeftPos(1 + (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2));

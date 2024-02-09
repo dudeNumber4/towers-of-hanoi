@@ -196,7 +196,7 @@ public class Towers
 
         ringCountEven = ringCount % 2 == 0;
 
-        System.out.printf("%1$sStart game.  Smallest ring is ring 1; largest ring is ring %2$d.%1$s%n", System.lineSeparator(), ringCount);
+        System.out.printf("%1$sStart positions:%1$s%n", System.lineSeparator());
         mediator.printTower(start, temp, target, ringCount);
     }
 

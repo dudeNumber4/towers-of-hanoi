@@ -51,6 +51,7 @@ public class ConsolePrinter
         }
     }
 
+    // Return true if we printed something
     private boolean handleRingArea(CanvasTower tower, int rowNum, int colNum)
     {
         final AtomicReference<Boolean> result = new AtomicReference<>();
@@ -58,9 +59,13 @@ public class ConsolePrinter
         fallsWithinRingResult.accept((fallsWithinRing, towerNumber) ->
         {
             result.set(fallsWithinRing);
-            if (fallsWithinRing)
+            if (fallsWithinRing && towerNumber == 0)
             {
                 System.out.print("=");
+            }
+            else if (fallsWithinRing)
+            {
+                System.out.print(towerNumber);
             }
         });
         return result.get();

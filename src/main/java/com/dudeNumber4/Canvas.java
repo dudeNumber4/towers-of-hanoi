@@ -4,6 +4,7 @@ import lombok.Getter;
 import wtf.g4s8.tuples.Pair;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 // Owns the towers and does calculations to enable console printer
 public class Canvas
@@ -24,7 +25,7 @@ public class Canvas
     //     ===========   sum 11, center 6
     //   ===============  sum 15, center 8
     // ===================  sum 19, center 10
-    private final int towerCenter;
+    private final int towerCenterAtMaxWidth;
 
     private final int ringCount;  // number of rings per tower
     private final CanvasTower start;
@@ -51,7 +52,7 @@ public class Canvas
             this.width = canvasWidth();
             this.maxTowerWidth = Math.max(Math.max(this.start.maxWidth(), this.temp.maxWidth()), this.target.maxWidth());
             configureTowers();
-            this.towerCenter = (this.maxTowerWidth / 2) + 1;
+            this.towerCenterAtMaxWidth = (this.maxTowerWidth / 2) + 1;
         }
         else
         {
@@ -91,32 +92,39 @@ public class Canvas
      * @param tower
      * @param rowNum: 1 is top of tower above the top ring (but the tower center still prints here).  See diagram in CanvasTawer.
      * @param colNum
-     * @return True if we fall anywhere within the printed portion of a ring on a tower, int that, if non-0 indicates tower number
+     * @return tuple of [True if we fall anywhere within the printed portion of a ring on a tower], [int that, if non-0 indicates tower number]
      * @implNote Pre: we know we fall somewhere within a tower's area, now determine whether we are in a ring on that tower's area or in the edge/empty space.
      */
     public Pair<Boolean, Integer> fallsWithinRing(CanvasTower tower, int rowNum, int colNum)
     {
+        final AtomicReference<Boolean> fallsWithinRingResult = new AtomicReference<>();
+        final AtomicReference<Boolean> fallsOnCenterOfRingResult = new AtomicReference<>();
         var ringWidth = tower.getRingWidth(rowNum);
 
         if (ringWidth == 0) // no ring for this tower for this row
             return Pair.of(false, 0);
 
-        // expected to be called left to right
-        if (maxTowerWidth == ringWidth)
-            return Pair.of(true, 0);  // ring occupies full width
-
-        return fallsWithinRingOnCol(tower, ringWidth, colNum);
+        Pair<Boolean, Boolean> whereItFalls = fallsWithinRingOnCol(tower, ringWidth, colNum);
+        whereItFalls.accept((fallsWithinRing, fallsOnCenterOfRing) ->
+        {
+            fallsWithinRingResult.set(fallsWithinRing);
+            fallsOnCenterOfRingResult.set(fallsOnCenterOfRing);
+        });
+        return Pair.of(fallsWithinRingResult.get(), fallsOnCenterOfRingResult.get() ? tower.getRingNumber(rowNum) : 0);
     }
 
     /*
     All these "fallsOnRow" and "fallsWithinRingOnCol" functions are currently designed to be called in order to arrive at the correct position.
      */
 
-    private Pair<Boolean, Integer> fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
+    // Returns tuple of [True if we fall anywhere within the printed portion of a ring on a tower], [True if we're on the center of the ring]
+    private Pair<Boolean, Boolean> fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
     {
         var baseEdgeForCurrentRingWidth = (maxTowerWidth - ringWidth) / 2;
         var leftEdgeForCurrentRingWidth = baseEdgeForCurrentRingWidth + 1;
         var rightEdgeForCurrentRingWidth = maxTowerWidth - baseEdgeForCurrentRingWidth;
+        var fallsWithinRing = false;
+        var fallsOnCenterOfRing = false;
         if (tower.getTowerType() == TowerType.temp)
         {
             leftEdgeForCurrentRingWidth = maxTowerWidth + WIDTH_BETWEEN_TOWERS + baseEdgeForCurrentRingWidth + 1;
@@ -128,10 +136,19 @@ public class Canvas
             rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdgeForCurrentRingWidth ;
         }
 
-        // this func return tuple; boolean, int: print if not 0
-        // may need to involve tower.getRingWidth(rowNum)
+        fallsWithinRing = (colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth);
+        fallsOnCenterOfRing = fallsOnCenterOfRing(tower, colNum);
+        return Pair.of(fallsWithinRing, fallsOnCenterOfRing);
+    }
 
-        return Pair.of((colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth), 0);
+    private boolean fallsOnCenterOfRing(CanvasTower tower, int colNum)
+    {
+        return switch (tower.getTowerType())
+        {
+            case TowerType.start -> fallsOnCenterOfStart(colNum);
+            case TowerType.temp -> fallsOnCenterOfTemp(colNum);
+            case TowerType.target -> fallsOnCenterOfTarget(colNum);
+        };
     }
 
     private boolean fallsOnRowWithinStartTower(int colNum)
@@ -156,17 +173,17 @@ public class Canvas
 
     private boolean fallsOnCenterOfStart(int colNum)
     {
-        return colNum == towerCenter;
+        return colNum == towerCenterAtMaxWidth;
     }
 
     private boolean fallsOnCenterOfTemp(int colNum)
     {
-        return colNum == temp.getLeftPos() + towerCenter - 1;
+        return colNum == temp.getLeftPos() + towerCenterAtMaxWidth - 1;
     }
 
     private boolean fallsOnCenterOfTarget(int colNum)
     {
-        return colNum == target.getLeftPos() + towerCenter - 1;
+        return colNum == target.getLeftPos() + towerCenterAtMaxWidth - 1;
     }
 
     private void configureTowers()

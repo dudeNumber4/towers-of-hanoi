@@ -75,6 +75,14 @@ public class CanvasTower
         return ringWidths.get((tower.size() - 1) - (row - 2));
     }
 
+    // The ring "number" is simply the value in the list underlying the tower.
+    public int getRingNumber(int row)
+    {
+        if (row == 1)
+            return 0; // Row 1 never has a ring in it.
+        return tower.get(tower.size() - row + 1);
+    }
+
     /**
      * @param ringNum 1 smallest ring; 8 largest
      * @return Given a ring number, return the width in '=' characters that ring should print.

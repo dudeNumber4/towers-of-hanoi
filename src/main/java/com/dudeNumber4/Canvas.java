@@ -1,7 +1,7 @@
 package com.dudeNumber4;
 
 import lombok.Getter;
-import lombok.Setter;
+import wtf.g4s8.tuples.Pair;
 
 import java.util.List;
 
@@ -91,19 +91,19 @@ public class Canvas
      * @param tower
      * @param rowNum: 1 is top of tower above the top ring (but the tower center still prints here).  See diagram in CanvasTawer.
      * @param colNum
-     * @return True if we fall anywhere within the printed portion of a ring on a tower
+     * @return True if we fall anywhere within the printed portion of a ring on a tower, int that, if non-0 indicates tower number
      * @implNote Pre: we know we fall somewhere within a tower's area, now determine whether we are in a ring on that tower's area or in the edge/empty space.
      */
-    public boolean fallsWithinRing(CanvasTower tower, int rowNum, int colNum)
+    public Pair<Boolean, Integer> fallsWithinRing(CanvasTower tower, int rowNum, int colNum)
     {
         var ringWidth = tower.getRingWidth(rowNum);
 
         if (ringWidth == 0) // no ring for this tower for this row
-            return false;
+            return Pair.of(false, 0);
 
         // expected to be called left to right
         if (maxTowerWidth == ringWidth)
-            return true;  // ring occupies full width
+            return Pair.of(true, 0);  // ring occupies full width
 
         return fallsWithinRingOnCol(tower, ringWidth, colNum);
     }
@@ -112,7 +112,7 @@ public class Canvas
     All these "fallsOnRow" and "fallsWithinRingOnCol" functions are currently designed to be called in order to arrive at the correct position.
      */
 
-    private boolean fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
+    private Pair<Boolean, Integer> fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
     {
         var baseEdgeForCurrentRingWidth = (maxTowerWidth - ringWidth) / 2;
         var leftEdgeForCurrentRingWidth = baseEdgeForCurrentRingWidth + 1;
@@ -128,7 +128,10 @@ public class Canvas
             rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdgeForCurrentRingWidth ;
         }
 
-        return (colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth);
+        // this func return tuple; boolean, int: print if not 0
+        // may need to involve tower.getRingWidth(rowNum)
+
+        return Pair.of((colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth), 0);
     }
 
     private boolean fallsOnRowWithinStartTower(int colNum)

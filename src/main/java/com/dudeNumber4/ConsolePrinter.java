@@ -1,6 +1,10 @@
 package com.dudeNumber4;
 
+import wtf.g4s8.tuples.Pair;
+
 import java.util.List;
+import java.util.Stack;
+import java.util.concurrent.atomic.AtomicReference;
 
 // Creates the canvas and uses it's calculations to print the towers.
 // 2 assumptions:
@@ -29,9 +33,9 @@ public class ConsolePrinter
                 }
                 else
                 {
-                    if (canvas.fallsWithinRing(towerForRow, rowNum, colNum))
+                    if (handleRingArea(towerForRow, rowNum, colNum))
                     {
-                        System.out.print("=");
+                        continue;
                     }
                     else if (canvas.fallsOnRowInTowerCenter(colNum))
                     {
@@ -45,6 +49,21 @@ public class ConsolePrinter
             }
             System.out.println();
         }
+    }
+
+    private boolean handleRingArea(CanvasTower tower, int rowNum, int colNum)
+    {
+        final AtomicReference<Boolean> result = new AtomicReference<>();
+        Pair<Boolean, Integer> fallsWithinRingResult = canvas.fallsWithinRing(tower, rowNum, colNum);
+        fallsWithinRingResult.accept((fallsWithinRing, towerNumber) ->
+        {
+            result.set(fallsWithinRing);
+            if (fallsWithinRing)
+            {
+                System.out.print("=");
+            }
+        });
+        return result.get();
     }
 
 }

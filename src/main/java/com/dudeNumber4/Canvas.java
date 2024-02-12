@@ -1,7 +1,10 @@
 package com.dudeNumber4;
 
 import lombok.Getter;
-import lombok.Setter;
+import wtf.g4s8.tuples.Pair;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 // Owns the towers and does calculations to enable console printer
 public class Canvas
@@ -11,7 +14,7 @@ public class Canvas
 
     // width at widest point for all towers, whether they have any rings at the time or not.
     // In ascii art below, width would be 19
-    private int maxTowerWidth;
+    private final int maxTowerWidth;
 
     // The center of each tower is similar to above; only need be calculated once, it remains the same
     // throughout the drawing period.
@@ -22,29 +25,34 @@ public class Canvas
     //     ===========   sum 11, center 6
     //   ===============  sum 15, center 8
     // ===================  sum 19, center 10
-    private int towerCenter;
+    private final int towerCenterAtMaxWidth;
 
-    private int ringCount;  // number of rings per tower
+    private final int ringCount;  // number of rings per tower
+    private final CanvasTower start;
+    private final CanvasTower temp;
+    private final CanvasTower target;
 
-    @Getter @Setter private int height;
-    @Getter @Setter private int width;
-    /*@Getter @Setter*/ private CanvasTower start;
-    /*@Getter @Setter*/ private CanvasTower temp;
-    /*@Getter @Setter*/ private CanvasTower target;
+    @Getter private final int height;
+    @Getter private final int width;
 
     /**
      * @implNote The canvas is just an object that holds positions; it doesn't actually print anything.
      */
-    public Canvas(CanvasTower start, CanvasTower temp, CanvasTower target)
+    public Canvas(List<Integer> start, List<Integer> temp, List<Integer> target)
     {
-        if (start.getTower().size() == temp.getTower().size() && temp.getTower().size() == target.getTower().size())
+        // I want to extract this into a method named "InitializeTowers," but java is not smart enough for that.
+        this.start = new CanvasTower(start, TowerType.start);
+        this.temp = new CanvasTower(temp, TowerType.temp);
+        this.target = new CanvasTower(target, TowerType.target);
+
+        if (this.start.getTower().size() == this.temp.getTower().size() && this.temp.getTower().size() == this.target.getTower().size())
         {
-            this.ringCount = start.getTower().size();
+            this.ringCount = this.start.getTower().size();
             this.height = canvasHeight();
             this.width = canvasWidth();
-            this.maxTowerWidth = Math.max(Math.max(start.maxWidth(), temp.maxWidth()), target.maxWidth());
-            configureTowers(start, temp, target);
-            this.towerCenter = (this.maxTowerWidth / 2) + 1;
+            this.maxTowerWidth = Math.max(Math.max(this.start.maxWidth(), this.temp.maxWidth()), this.target.maxWidth());
+            configureTowers();
+            this.towerCenterAtMaxWidth = (this.maxTowerWidth / 2) + 1;
         }
         else
         {
@@ -55,6 +63,7 @@ public class Canvas
     public CanvasTower fallsOnRowWithinTower(int colNum)
     {
         // start WIDTH_BETWEEN_TOWERS temp WIDTH_BETWEEN_TOWERS target
+        // It sure seems like some sort of pattern matching would be nice here, but it doesn't fit any java 21 form.
         if (fallsOnRowWithinStartTower(colNum))
         {
             return start;
@@ -83,32 +92,39 @@ public class Canvas
      * @param tower
      * @param rowNum: 1 is top of tower above the top ring (but the tower center still prints here).  See diagram in CanvasTawer.
      * @param colNum
-     * @return True if we fall anywhere within the printed portion of a ring on a tower
+     * @return tuple of [True if we fall anywhere within the printed portion of a ring on a tower], [int that, if non-0 indicates tower number]
      * @implNote Pre: we know we fall somewhere within a tower's area, now determine whether we are in a ring on that tower's area or in the edge/empty space.
      */
-    public boolean fallsWithinRing(CanvasTower tower, int rowNum, int colNum)
+    public Pair<Boolean, Integer> fallsWithinRing(CanvasTower tower, int rowNum, int colNum)
     {
+        final AtomicReference<Boolean> fallsWithinRingResult = new AtomicReference<>();
+        final AtomicReference<Boolean> fallsOnCenterOfRingResult = new AtomicReference<>();
         var ringWidth = tower.getRingWidth(rowNum);
 
         if (ringWidth == 0) // no ring for this tower for this row
-            return false;
+            return Pair.of(false, 0);
 
-        // expected to be called left to right
-        if (maxTowerWidth == ringWidth)
-            return true;  // ring occupies full width
-
-        return fallsWithinRingOnCol(tower, ringWidth, colNum);
+        Pair<Boolean, Boolean> whereItFalls = fallsWithinRingOnCol(tower, ringWidth, colNum);
+        whereItFalls.accept((fallsWithinRing, fallsOnCenterOfRing) ->
+        {
+            fallsWithinRingResult.set(fallsWithinRing);
+            fallsOnCenterOfRingResult.set(fallsOnCenterOfRing);
+        });
+        return Pair.of(fallsWithinRingResult.get(), fallsOnCenterOfRingResult.get() ? tower.getRingNumber(rowNum) : 0);
     }
 
     /*
     All these "fallsOnRow" and "fallsWithinRingOnCol" functions are currently designed to be called in order to arrive at the correct position.
      */
 
-    private boolean fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
+    // Returns tuple of [True if we fall anywhere within the printed portion of a ring on a tower], [True if we're on the center of the ring]
+    private Pair<Boolean, Boolean> fallsWithinRingOnCol(CanvasTower tower, int ringWidth, int colNum)
     {
         var baseEdgeForCurrentRingWidth = (maxTowerWidth - ringWidth) / 2;
         var leftEdgeForCurrentRingWidth = baseEdgeForCurrentRingWidth + 1;
         var rightEdgeForCurrentRingWidth = maxTowerWidth - baseEdgeForCurrentRingWidth;
+        var fallsWithinRing = false;
+        var fallsOnCenterOfRing = false;
         if (tower.getTowerType() == TowerType.temp)
         {
             leftEdgeForCurrentRingWidth = maxTowerWidth + WIDTH_BETWEEN_TOWERS + baseEdgeForCurrentRingWidth + 1;
@@ -120,7 +136,19 @@ public class Canvas
             rightEdgeForCurrentRingWidth = (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2) + maxTowerWidth - baseEdgeForCurrentRingWidth ;
         }
 
-        return (colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth);
+        fallsWithinRing = (colNum >= leftEdgeForCurrentRingWidth) && (colNum <= rightEdgeForCurrentRingWidth);
+        fallsOnCenterOfRing = fallsOnCenterOfRing(tower, colNum);
+        return Pair.of(fallsWithinRing, fallsOnCenterOfRing);
+    }
+
+    private boolean fallsOnCenterOfRing(CanvasTower tower, int colNum)
+    {
+        return switch (tower.getTowerType())
+        {
+            case TowerType.start -> fallsOnCenterOfStart(colNum);
+            case TowerType.temp -> fallsOnCenterOfTemp(colNum);
+            case TowerType.target -> fallsOnCenterOfTarget(colNum);
+        };
     }
 
     private boolean fallsOnRowWithinStartTower(int colNum)
@@ -145,24 +173,21 @@ public class Canvas
 
     private boolean fallsOnCenterOfStart(int colNum)
     {
-        return colNum == towerCenter;
+        return colNum == towerCenterAtMaxWidth;
     }
 
     private boolean fallsOnCenterOfTemp(int colNum)
     {
-        return colNum == temp.getLeftPos() + towerCenter - 1;
+        return colNum == temp.getLeftPos() + towerCenterAtMaxWidth - 1;
     }
 
     private boolean fallsOnCenterOfTarget(int colNum)
     {
-        return colNum == target.getLeftPos() + towerCenter - 1;
+        return colNum == target.getLeftPos() + towerCenterAtMaxWidth - 1;
     }
 
-    private void configureTowers(CanvasTower start, CanvasTower temp, CanvasTower target)
+    private void configureTowers()
     {
-        this.start = start;
-        this.temp = temp;
-        this.target = target;
         this.start.setLeftPos(1);
         this.temp.setLeftPos(1 + maxTowerWidth + WIDTH_BETWEEN_TOWERS);
         this.target.setLeftPos(1 + (maxTowerWidth * 2) + (WIDTH_BETWEEN_TOWERS * 2));

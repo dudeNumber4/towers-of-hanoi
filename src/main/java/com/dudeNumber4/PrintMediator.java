@@ -5,15 +5,18 @@ import java.util.List;
 import java.util.Stack;
 import java.util.stream.IntStream;
 
+/*
+Started with just Towers class.  Added ConsolePrinter (and supporting).  This forwarded or mediated between towers and the printer.
+ */
 public class PrintMediator
 {
 
     public void printTower(Stack<Integer> start, Stack<Integer> temp, Stack<Integer> target, int towerHeight)
     {
         // "bottom" rings are at head of lists.
-        var startTower = new CanvasTower(getListForTower(start, towerHeight), TowerType.start);
-        var tempTower = new CanvasTower(getListForTower(temp, towerHeight), TowerType.temp);
-        var targetTower = new CanvasTower(getListForTower(target, towerHeight), TowerType.target);
+        var startTower = getListForTower(start, towerHeight);
+        var tempTower = getListForTower(temp, towerHeight);
+        var targetTower = getListForTower(target, towerHeight);
         ConsolePrinter printer = new ConsolePrinter(startTower, tempTower, targetTower);
         printer.Print();
         System.out.println();

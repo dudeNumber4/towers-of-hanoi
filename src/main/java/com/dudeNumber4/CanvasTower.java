@@ -1,6 +1,7 @@
 package com.dudeNumber4;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.Getter;
@@ -55,12 +56,12 @@ public class CanvasTower
     {
         this.tower = tower;
         this.towerType = towerType;
-        ringWidths = new ArrayList<>(tower.stream().map((i) -> ringWidth(i)).toList());
+        ringWidths = new ArrayList<>(tower.stream().map(CanvasTower::ringWidth).toList());
     }
 
     public int maxWidth()
     {
-        return ringWidths.stream().max(Integer::max).orElse(0);
+        return ringWidths.stream().max(Comparator.naturalOrder()).orElse(0);
     }
 
     /**
@@ -72,6 +73,14 @@ public class CanvasTower
         if (row == 1)
             return 0; // Row 1 never has a ring in it.
         return ringWidths.get((tower.size() - 1) - (row - 2));
+    }
+
+    // The ring "number" is simply the value in the list underlying the tower.
+    public int getRingNumber(int row)
+    {
+        if (row == 1)
+            return 0; // Row 1 never has a ring in it.
+        return tower.get(tower.size() - row + 1);
     }
 
     /**

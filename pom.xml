@@ -6,14 +6,14 @@
   <groupId>com.dudeNumber4</groupId>
   <artifactId>towersofhanoi</artifactId>
   <packaging>jar</packaging>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
 
   <name>towers-of-hanoi</name>
   <url>https://github.com/dudeNumber4/towers-of-hanoi</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>17</maven.compiler.release>
+    <maven.compiler.release>21</maven.compiler.release>
   </properties>
 
   <dependencies>
@@ -25,7 +25,7 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.26</version>
+      <version>1.18.30</version>
       <scope>provided</scope>
   </dependency>
 </dependencies>

@@ -29,7 +29,6 @@ And ends like this:
 ## Dependencies
 * https://mvnrepository.com/artifact/wtf.g4s8/tuples/0.1.2  Crazy strange that a language as old as java doesn't have tuples.
 * Lombok  
-Maven command: `mvn clean compile assembly:single`
 
 ## Running
-Game essentially limited to 8 rings, otherwise it'll take a very long time and spew too much output.
+Game currently limited to 8 rings, otherwise it'll take a very long time.

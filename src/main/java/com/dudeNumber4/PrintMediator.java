@@ -11,15 +11,22 @@ Started with just Towers class.  Added ConsolePrinter (and supporting).  This fo
 public class PrintMediator
 {
 
-    public void printTower(Stack<Integer> start, Stack<Integer> temp, Stack<Integer> target, int towerHeight)
+    public void printTower(Stack<Integer> start, Stack<Integer> temp, Stack<Integer> target, int towerHeight) throws InterruptedException
     {
         // "bottom" rings are at head of lists.
         var startTower = getListForTower(start, towerHeight);
         var tempTower = getListForTower(temp, towerHeight);
         var targetTower = getListForTower(target, towerHeight);
         ConsolePrinter printer = new ConsolePrinter(startTower, tempTower, targetTower);
-        printer.Print();
+        print(printer);
         System.out.println();
+    }
+
+    private static void print(ConsolePrinter printer) throws InterruptedException
+    {
+        // Just added virtual thread to tinker.  I thought it would actually slow down print (creating virtual thread for every move just to print),
+        // but it did speed up printing (which is very slow).
+        Thread.ofVirtual().name("Print move to console").start(printer::Print).join();
     }
 
     private List<Integer> getListForTower(Stack<Integer> s, int towerHeight)

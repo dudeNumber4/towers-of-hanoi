@@ -17,7 +17,7 @@ public class Towers
     private boolean quit = false;
     private final Scanner consoleScanner = new Scanner(System.in);
 
-    public void start()
+    public void start() throws InterruptedException
     {
         while (ringCount < 3 || ringCount > 8)
         {
@@ -75,7 +75,13 @@ public class Towers
 
         triplettToMove.accept((moveLeft, towerToMoveFrom, towerToMoveTo) ->
         {
-            move(towerToMoveFrom, towerToMoveTo);
+            try
+            {
+                move(towerToMoveFrom, towerToMoveTo);
+            } catch (InterruptedException e)
+            {
+                throw new RuntimeException(e);
+            }
         });
     }
 
@@ -140,7 +146,7 @@ public class Towers
         return left ? temp : start;
     }
 
-    private void move(Stack<Integer> from, Stack<Integer> to) throws IllegalMove
+    private void move(Stack<Integer> from, Stack<Integer> to) throws IllegalMove, InterruptedException
     {
         Integer fromValue = peek(from);
         Integer toValue = peek(to);
@@ -160,7 +166,7 @@ public class Towers
         }
     }
 
-    private void printMove(Stack<Integer> from, Stack<Integer> to, Integer fromValue)
+    private void printMove(Stack<Integer> from, Stack<Integer> to, Integer fromValue) throws InterruptedException
     {
         System.out.printf("Move ring %1$d from %2$s to %3$s:%n", fromValue, getTowerName(from), getTowerName(to));
         mediator.printTower(start, temp, target, ringCount);
@@ -183,7 +189,7 @@ public class Towers
         return "Target";
     }
     
-    private void prepareGame(int ringCount)
+    private void prepareGame(int ringCount) throws InterruptedException
     {
         start = new Stack<>();
         temp = new Stack<>();

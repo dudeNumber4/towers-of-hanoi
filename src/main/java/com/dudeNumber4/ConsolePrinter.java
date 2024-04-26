@@ -3,7 +3,6 @@ package com.dudeNumber4;
 import wtf.g4s8.tuples.Pair;
 
 import java.util.List;
-import java.util.Stack;
 import java.util.concurrent.atomic.AtomicReference;
 
 // Creates the canvas and uses it's calculations to print the towers.

@@ -6,7 +6,7 @@
   <groupId>com.dudeNumber4</groupId>
   <artifactId>towersofhanoi</artifactId>
   <packaging>jar</packaging>
-  <version>1.2-SNAPSHOT</version>
+  <version>1.3-SNAPSHOT</version>
 
   <name>towers-of-hanoi</name>
   <url>https://github.com/dudeNumber4/towers-of-hanoi</url>

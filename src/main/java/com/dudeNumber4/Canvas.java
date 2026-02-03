@@ -99,7 +99,7 @@ public class Canvas
     {
         final AtomicReference<Boolean> fallsWithinRingResult = new AtomicReference<>();
         final AtomicReference<Boolean> fallsOnCenterOfRingResult = new AtomicReference<>();
-        var ringWidth = tower.getRingWidth(rowNum);
+        int ringWidth = tower.getRingWidth(rowNum);
 
         if (ringWidth == 0) // no ring for this tower for this row
             return Pair.of(false, 0);
